@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "163007701898",
+    "firebase_url": "https://mobilecomapp.firebaseio.com",
+    "project_id": "mobilecomapp",
+    "storage_bucket": "mobilecomapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163007701898:android:125c239af7edeee4",
+        "android_client_info": {
+          "package_name": "apps.shay.barak.mobilecomapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "163007701898-73cepastp3kc53tlur7pfs7aqrj8buj7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.shay.barak.mobilecomapp",
+            "certificate_hash": "9c96d7abb7fa8f4b045856d3e9c20c6a99ef9099"
+          }
+        },
+        {
+          "client_id": "163007701898-ho13sa00ev8rh2kcq2u1qctk3fkvj16l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGy4wFQ9mT4BriXYezNcUwAlFA_ZqDqUk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "163007701898-ho13sa00ev8rh2kcq2u1qctk3fkvj16l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
