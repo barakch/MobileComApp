@@ -4,29 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/bg"
     tools:context=".activities.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_margin="15dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="6dp"
+        android:layout_weight="4.2"
         android:background="@drawable/border"
-        android:layout_weight="4.5">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:textStyle="bold"
             android:fontFamily="casual"
-            android:textSize="15sp"
-            android:textColor="#000000"
+            android:gravity="center"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:text="Login with Email"
+            android:textColor="#000000"
+            android:textSize="15sp"
 
-            android:text="Login with Email" />
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/ed_signin_email"
@@ -53,67 +58,82 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:background="@drawable/login_btn_selector"
             android:text="Login" />
 
         <TextView
             android:id="@+id/tv_forgot_pass"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.1"
+            android:layout_weight="1.05"
+            android:fontFamily="casual"
+            android:layout_marginTop="5dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:fontFamily="casual"
-            android:text="forgot password" />
+            android:gravity="center_vertical"
+            android:background="@drawable/transparent_selector"
+            android:text="Forgot password" />
 
 
         <TextView
             android:id="@+id/tv_signup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.1"
+            android:layout_weight="1.05"
+            android:fontFamily="casual"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:fontFamily="casual"
+            android:gravity="center_vertical"
+            android:background="@drawable/transparent_selector"
             android:text="New user? Sign up" />
 
     </LinearLayout>
-
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="10"
-        android:gravity="center"
-        android:textStyle="bold"
         android:fontFamily="casual"
-        android:textSize="15sp"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="Or login with Facebook\\Google account"
         android:textColor="#000000"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:text="Or login with Facebook\\Google account" />
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/btn_login_google"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="10"
-        android:padding="10dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:text="Login with Google" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_weight="8"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_login_facebook"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="10"
-        android:padding="10dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:text="Login with Facebook" />
+        <ImageButton
+            android:id="@+id/btn_login_google"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:layout_gravity="center"
+            android:background="#00000000"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/google_plus_signin_btn_selector"
+            android:text="Google plus"
+            android:visibility="visible" />
 
+        <ImageButton
+            android:id="@+id/btn_login_facebook"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="#00000000"
+            android:scaleType="fitCenter"
+            android:src="@drawable/facebook_signin_btn_selector" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "User provider is:" + user.getProviderId());
                     if (user.getProviderId().equals("facebook.com")) {
                         System.out.println("User is signed in with Facebook");
+                        facebookSignout();
                         return;
                     } else if (user.getProviderId().equals("google.com")) {
                         System.out.println("User is signed in with google");
@@ -68,8 +71,20 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void facebookSignout() {
+        if (isFacebookLoggedinLoggedIn())
+            LoginManager.getInstance().logOut();
+        removeFirebaseUserAndOpenLoginActivity();
+    }
+
+    public boolean isFacebookLoggedinLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
+
     void removeFirebaseUserAndOpenLoginActivity() {
-        FirebaseAuth.getInstance().signOut();
+        mAuth.signOut();
+
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         finish();
