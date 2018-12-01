@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Log.d(TAG, "facebook:onError", error);
         new LovelyStandardDialog(LoginActivity.this)
                 .setTitle("We have an error")
-                .setMessage(error.getMessage()).setPositiveButtonText("OK")
+                .setMessage(error.getCause().getMessage()).setPositiveButtonText("OK")
                 .show();
     }
 
