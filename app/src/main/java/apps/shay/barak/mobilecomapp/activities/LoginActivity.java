@@ -62,6 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.tv_forgot_pass).setOnClickListener(this);
         findViewById(R.id.tv_signup).setOnClickListener(this);
         findViewById(R.id.btn_login_facebook).setOnClickListener(this);
+        findViewById(R.id.tv_anonymous).setOnClickListener(this);
 
 
         // Configure Google Login
@@ -79,6 +80,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         LoginManager.getInstance().registerCallback(callbackManager, this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     public void onClick(View view) {
@@ -114,6 +119,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.tv_signup:
                 openEmailSignupActivity();
+                break;
+
+            case R.id.tv_anonymous:
+                signupAnonymously();
                 break;
         }
     }
@@ -304,6 +313,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
     }
 
+    /**
+     * Anonymous signup
+     */
+     private void signupAnonymously(){
+         showProgressDialog();
+         mAuth.signInAnonymously()
+                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                     @Override
+                     public void onComplete(@NonNull Task<AuthResult> task) {
+                         if (task.isSuccessful()) {
+                             // Sign in success, update UI with the signed-in user's information
+                             Log.d(TAG, "signInAnonymously:success");
+                             openMainActivity();
+                         } else {
+                             // If sign in fails, display a message to the user.
+                             Log.w(TAG, "signInAnonymously:failure", task.getException());
+                             new LovelyStandardDialog(LoginActivity.this)
+                                     .setTitle("We have an error")
+                                     .setMessage(task.getException().getMessage()).setPositiveButtonText("OK")
+                                     .show();
+                         }
+                         hideProgressDialog();
+                     }
+                 });
+     }
 
     /**
      * Helpers

@@ -68,26 +68,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String name = user.getDisplayName();
         String email = user.getEmail();
 
-        tvName.setText("Display Name: "+name);
-        tvEmail.setText("Email: "+email);
+        if(name == null || name.isEmpty()) {
+            tvName.setText("Name: Anonymous");
+            tvEmail.setVisibility(View.INVISIBLE);
+            Picasso.get().load(R.drawable.place_holder_user).into(imgUser);
+            return;
+        }
 
+
+        tvName.setText("Name: " + name);
+        tvEmail.setText("Email: " + email);
 
         //Set the user photo
         Log.d(TAG,    ""+user.getPhotoUrl());
         for (UserInfo info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
             if (info.getProviderId().equals("facebook.com")) {
-                Picasso.get().load(user.getPhotoUrl()+"/picture?type=large").resize(300, 300).centerCrop().placeholder(R.drawable.place_holder_user).into(imgUser);
+                Picasso.get().load(user.getPhotoUrl()+"/picture?type=large").resize(300, 300).centerInside().placeholder(R.drawable.place_holder_user).into(imgUser);
                 return;
             }
         }
-        Picasso.get().load(user.getPhotoUrl()).resize(300, 300).centerCrop().placeholder(R.drawable.place_holder_user).into(imgUser);
+        Picasso.get().load(user.getPhotoUrl()).resize(300, 300).centerInside().placeholder(R.drawable.place_holder_user).into(imgUser);
     }
 
 
     private void logOut() {
+        if(FirebaseAuth.getInstance() == null || FirebaseAuth.getInstance().getCurrentUser() == null){
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         showProgressDialog();
         for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-
             Log.d(TAG, "User provider is:" + user.getProviderId());
             if (user.getProviderId().equals("facebook.com")) {
                 System.out.println("User is signed in with Facebook");
