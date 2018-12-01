@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,7 +32,9 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
 import java.util.Arrays;
+
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
 
@@ -186,7 +189,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "Email sent.");
                                     Toast.makeText(LoginActivity.this, "An email was sent to you", Toast.LENGTH_SHORT).show();
-                                }else{
+                                } else {
                                     new LovelyStandardDialog(LoginActivity.this)
                                             .setTitle("We have an error")
                                             .setMessage(task.getException().getMessage()).setPositiveButtonText("OK")
@@ -202,7 +205,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     /**
      * Login with Facebook
      */
-    private void loginWithFacebook(){
+    private void loginWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
     }
 
@@ -222,10 +225,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onError(FacebookException error) {
         Log.d(TAG, "facebook:onError", error);
-        new LovelyStandardDialog(LoginActivity.this)
-                .setTitle("We have an error")
-                .setMessage(error.getCause().getMessage()).setPositiveButtonText("OK")
-                .show();
+
+        if (error != null && error.getCause() != null) {
+            String errMsg = error.getCause().toString();
+            if (error.getCause().getMessage() != null)
+                errMsg = error.getCause().getMessage();
+            new LovelyStandardDialog(LoginActivity.this)
+                    .setTitle("We have an error")
+                    .setMessage(""+errMsg).setPositiveButtonText("OK")
+                    .show();
+        }
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -300,7 +309,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * Helpers
      */
     public void showProgressDialog() {
-        if(progressDialog != null){
+        if (progressDialog != null) {
             return;
         }
 
@@ -310,7 +319,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void hideProgressDialog() {
-        if(progressDialog != null)
+        if (progressDialog != null)
             progressDialog.dismiss();
         progressDialog = null;
     }
