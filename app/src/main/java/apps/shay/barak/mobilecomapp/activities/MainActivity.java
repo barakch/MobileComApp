@@ -67,12 +67,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void updateUI(FirebaseUser user){
         String name = user.getDisplayName();
         String email = user.getEmail();
-        user.getPhotoUrl();
 
         tvName.setText("Display Name: "+name);
         tvEmail.setText("Email: "+email);
-        Picasso.get().load(user.getPhotoUrl()).placeholder(R.drawable.place_holder_user).into(imgUser);
 
+
+        //Set the user photo
+        Log.d(TAG,    ""+user.getPhotoUrl());
+        for (UserInfo info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+            if (info.getProviderId().equals("facebook.com")) {
+                Picasso.get().load(user.getPhotoUrl()+"/picture?type=large").resize(300, 300).centerCrop().placeholder(R.drawable.place_holder_user).into(imgUser);
+                return;
+            }
+        }
+        Picasso.get().load(user.getPhotoUrl()).resize(300, 300).centerCrop().placeholder(R.drawable.place_holder_user).into(imgUser);
     }
 
 

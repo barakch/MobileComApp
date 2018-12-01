@@ -2,6 +2,7 @@ package apps.shay.barak.mobilecomapp.activities;
 
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -11,13 +12,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 
@@ -28,7 +36,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     public static final int PICK_IMAGE = 111;
     private FirebaseAuth mAuth;
     private EditText edEmail, edPassword, edName;
-    private String imagePath;
+    private Uri imagePath;
     private LovelyProgressDialog progressDialog;
 
 
@@ -71,7 +79,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_IMAGE) {
             if (data != null) {
-                imagePath = data.getDataString();
+                imagePath = data.getData();
             }
         }
     }
@@ -112,7 +120,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    private void createUser(String email, String password, final String name, final String imagePath) {
+    private void createUser(String email, String password, final String name, final Uri imagePath) {
         showProgressDialog();
         Log.d(TAG, "createUserWithEmail: start");
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -122,8 +130,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateProfile(name, imagePath);
+                            uploadPhoto(name, imagePath);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.d(TAG, "createUserWithEmail:failure", task.getException());
@@ -132,19 +139,51 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                                     .setTitle("We have an error")
                                     .setMessage(task.getException().getMessage()).setPositiveButtonText("OK")
                                     .show();
-                            LoginManager.getInstance().logOut();                        }
+                            LoginManager.getInstance().logOut();
+                        }
                     }
                 });
     }
 
-    private void updateProfile(String name, String imagePath) {
+    private void uploadPhoto(final String name, final Uri imagePath) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference();
+
+        final StorageReference ref = storageReference.child("images/" + mAuth.getCurrentUser().getUid());
+        ref.putFile(imagePath)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Uri downloadUrl = uri;
+                                updateProfile(name, downloadUrl);
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(SignupActivity.this, "Failed to upload profile photo", Toast.LENGTH_SHORT).show();
+                        updateProfile(name, null);
+                    }
+                });
+    }
+
+    private void updateProfile(String name, Uri imagePath) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(name)
-                .setPhotoUri(Uri.parse(imagePath))
-                .build();
-
+        UserProfileChangeRequest profileUpdates;
+        if (imagePath != null)
+            profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(name)
+                    .setPhotoUri(imagePath)
+                    .build();
+        else
+            profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(name)
+                    .build();
         user.updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -158,7 +197,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
-    private void sendVerificationEmail(FirebaseUser user){
+    private void sendVerificationEmail(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -169,6 +208,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        openLoginActivity();
     }
 
     public void openMainActivity() {
@@ -185,7 +229,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void showProgressDialog() {
-        if(progressDialog != null){
+        if (progressDialog != null) {
             return;
         }
 
@@ -195,7 +239,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void hideProgressDialog() {
-        if(progressDialog != null)
+        if (progressDialog != null)
             progressDialog.dismiss();
         progressDialog = null;
     }
