@@ -222,7 +222,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onError(FacebookException error) {
         Log.d(TAG, "facebook:onError", error);
-        // ...
+        new LovelyStandardDialog(LoginActivity.this)
+                .setTitle("We have an error")
+                .setMessage(error.getMessage()).setPositiveButtonText("OK")
+                .show();
     }
 
     private void handleFacebookAccessToken(AccessToken token) {

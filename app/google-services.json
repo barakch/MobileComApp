@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "163007701898-fqrbqqm6ivv0vdacigjmqmg4h5tnrmc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.shay.barak.mobilecomapp",
+            "certificate_hash": "210d77b3ca4d7d862893f55a1fa046c478bce337"
+          }
+        },
+        {
+          "client_id": "163007701898-7qcthdmbeeo59gpt816ri2iu1g98d0uu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.shay.barak.mobilecomapp",
+            "certificate_hash": "61a99b15b17e4c11a28fe39fac43ff1d92ae4a6a"
+          }
+        },
+        {
           "client_id": "163007701898-ho13sa00ev8rh2kcq2u1qctk3fkvj16l.apps.googleusercontent.com",
           "client_type": 3
         }
