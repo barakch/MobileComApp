@@ -147,6 +147,7 @@
         android:gravity="center_vertical"
         android:textAlignment="center"
         android:background="@drawable/transparent_selector"
+        android:visibility="invisible"
         android:text="Sign in Anonymously" />
 
 </LinearLayout>

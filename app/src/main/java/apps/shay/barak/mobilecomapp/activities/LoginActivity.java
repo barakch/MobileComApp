@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -30,6 +31,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 
@@ -44,9 +47,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseRemoteConfig mRemoteConfig;
     private CallbackManager callbackManager;
     private EditText edEmail, edPassword;
     private LovelyProgressDialog progressDialog;
+    private TextView btnAnnonymousLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.tv_forgot_pass).setOnClickListener(this);
         findViewById(R.id.tv_signup).setOnClickListener(this);
         findViewById(R.id.btn_login_facebook).setOnClickListener(this);
-        findViewById(R.id.tv_anonymous).setOnClickListener(this);
+        btnAnnonymousLogin = findViewById(R.id.tv_anonymous);
+        btnAnnonymousLogin.setOnClickListener(this);
 
 
         // Configure Google Login
@@ -72,17 +78,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-
         //Configure Facebook Login
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager, this);
+
+        //Check if anonymous login is enabled
+        mRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        mRemoteConfig.setConfigSettings(configSettings);
+        mRemoteConfig.fetch(0).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "RemoteConfig loaded: " + task.isSuccessful());
+                mRemoteConfig.activateFetched();
+                updateUI();
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    private void updateUI(){
+        if(mRemoteConfig.getBoolean("allow_annonymous")){
+            btnAnnonymousLogin.setVisibility(View.VISIBLE);
+        }else{
+            btnAnnonymousLogin.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
