@@ -70,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnAnnonymousLogin = findViewById(R.id.tv_anonymous);
         btnAnnonymousLogin.setOnClickListener(this);
 
-
         // Configure Google Login
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -98,11 +97,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 updateUI();
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     private void updateUI(){
