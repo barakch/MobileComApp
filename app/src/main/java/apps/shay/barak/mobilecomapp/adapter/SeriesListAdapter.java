@@ -1,6 +1,8 @@
 package apps.shay.barak.mobilecomapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,24 +10,35 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.activities.SeriesDetailsActivity;
 import apps.shay.barak.mobilecomapp.model.Series;
 import apps.shay.barak.mobilecomapp.model.User;
 
-public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.SeriesViewHolder> {
+public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.SeriesViewHolder> implements Filterable {
 
     private final String TAG = "SeriesListAdapter";
     private List<SeriesWithKey> seriesList;
+    private List<SeriesWithKey> seriesFilteredList;
     private User user;
 
     public SeriesListAdapter(List<SeriesWithKey> seriesList, User user) {
         this.seriesList = seriesList;
+        this.seriesFilteredList = seriesList;
         this.user = user;
     }
 
@@ -43,10 +56,10 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SeriesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final SeriesViewHolder holder, int position) {
         Log.e(TAG, "onBindViewHolder() >> " + position);
-        Series series = seriesList.get(position).getSeries();
-        String seriesKey = seriesList.get(position).getKey();
+        final Series series = seriesFilteredList.get(position).getSeries();
+        final String seriesKey = seriesFilteredList.get(position).getKey();
 
         holder.setSelectedSeries(series);
         holder.setSelectedSongKey(seriesKey);
@@ -59,11 +72,40 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         holder.price.setText("$" + series.getPrice());
         holder.rating.setRating(series.getRating());
         holder.reviewsCount.setVisibility(View.INVISIBLE);
+
+        if(series.getExplicitImageUrl() == null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/series/");
+            storageRef.child(series.getThumbImage()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    series.setExplicitImageUrl(uri.toString());
+                    Picasso.get().load(uri).into(holder.thumbImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        }else{
+            Picasso.get().load(series.getExplicitImageUrl()).into(holder.thumbImage);
+        }
+
+        holder.seriesCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, SeriesDetailsActivity.class);
+                intent.putExtra("series", series);
+                intent.putExtra("key", seriesKey);
+                intent.putExtra("user",user);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return seriesList.size();
+        return seriesFilteredList.size();
     }
 
     public class SeriesViewHolder extends RecyclerView.ViewHolder {
@@ -110,5 +152,40 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         public void setSelectedSongKey(String selectedSongKey) {
             this.selectedSongKey = selectedSongKey;
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    seriesFilteredList = seriesList;
+                } else {
+                    List<SeriesWithKey> filteredList = new ArrayList<>();
+                    for (SeriesWithKey row : seriesList) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getSeries().getName().toLowerCase().contains(charString.toLowerCase()) || row.getSeries().getName().contains(charSequence)) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    seriesFilteredList = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = seriesFilteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                seriesFilteredList = (ArrayList<SeriesWithKey>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

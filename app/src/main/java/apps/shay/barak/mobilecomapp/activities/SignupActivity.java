@@ -2,6 +2,7 @@ package apps.shay.barak.mobilecomapp.activities;
 
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
+import apps.shay.barak.mobilecomapp.model.User;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -22,6 +23,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -216,6 +219,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void openMainActivity() {
+        createNewUser();
         hideProgressDialog();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
@@ -242,5 +246,18 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         if (progressDialog != null)
             progressDialog.dismiss();
         progressDialog = null;
+    }
+
+    private void createNewUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
+
+        if (user == null) {
+            Log.e(TAG, "createNewUser() << Error user is null");
+            return;
+        }
+
+        userRef.child(user.getUid()).setValue(new User(user.getEmail(),0,null));
+        Log.e(TAG, "createNewUser() <<");
     }
 }

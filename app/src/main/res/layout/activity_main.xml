@@ -39,7 +39,8 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:ems="10"
-                    android:hint="Song Name"
+                    android:hint="Series Name"
+                    android:imeOptions="actionSearch"
                     android:inputType="text|textPersonName"
                     app:layout_constraintEnd_toStartOf="@+id/btn_search_series"
                     app:layout_constraintStart_toStartOf="parent"
@@ -66,6 +67,7 @@
                     android:layout_marginBottom="8dp"
                     android:checked="true"
                     android:text="Order by price"
+                    android:onClick="onRadioButtonCLick"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -75,6 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
+                    android:onClick="onRadioButtonCLick"
                     android:text="Order by reviews"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />

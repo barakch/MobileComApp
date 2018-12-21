@@ -19,6 +19,7 @@ public class Series implements Parcelable {
     private int rating;
     private int reviewsCount;
     private Map<String, Review> reviews;
+    private String explicitImageUrl;
 
     public Series() {
     }
@@ -134,6 +135,18 @@ public class Series implements Parcelable {
         this.reviews = reviews;
     }
 
+    public void incrementReviewCount() { reviewsCount++;}
+
+    public void incrementRating(int newRating) { rating+=newRating;}
+
+    public String getExplicitImageUrl() {
+        return explicitImageUrl;
+    }
+
+    public void setExplicitImageUrl(String explicitImageUrl) {
+        this.explicitImageUrl = explicitImageUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -152,6 +165,7 @@ public class Series implements Parcelable {
         parcel.writeInt(price);
         parcel.writeInt(rating);
         parcel.writeInt(reviewsCount);
+        parcel.writeString(explicitImageUrl);
     }
 
     private Series(Parcel in) {
@@ -166,7 +180,7 @@ public class Series implements Parcelable {
         this.price = in.readInt();
         this.rating = in.readInt();
         this.reviewsCount = in.readInt();
-
+        this.explicitImageUrl = in.readString();
     }
 
     public static final Parcelable.Creator<Series> CREATOR = new Parcelable.Creator<Series>() {

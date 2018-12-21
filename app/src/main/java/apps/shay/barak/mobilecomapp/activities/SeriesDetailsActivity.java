@@ -1,0 +1,175 @@
+package apps.shay.barak.mobilecomapp.activities;
+
+import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.adapter.ReviewsAdapter;
+import apps.shay.barak.mobilecomapp.model.Review;
+import apps.shay.barak.mobilecomapp.model.Series;
+import apps.shay.barak.mobilecomapp.model.User;
+
+public class SeriesDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+
+    public final String TAG = "SeriesDetailsActivity";
+    private Series series;
+    private String key;
+    private User user;
+
+    private FloatingActionButton writeReview;
+    private Button buyPlaySeries;
+    private ImageView detailsImg;
+    private MediaPlayer mediaPlayer;
+    private RecyclerView recyclerViewReviews;
+    private boolean seriesWasPurchased;
+    private DatabaseReference seriesReviewsRef;
+    private List<Review> reviewsList =  new ArrayList<>();
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_series_details);
+        key = getIntent().getStringExtra("key");
+        series = getIntent().getParcelableExtra("series");
+        user = getIntent().getParcelableExtra("user");
+
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+
+        ((TextView) findViewById(R.id.tv_details_name)).setText(series.getName());
+        ((TextView) findViewById(R.id.tv_details_no_seasons)).setText("Seasons: " + series.getNoOfSeasons());
+        ((TextView) findViewById(R.id.tv_details_genre)).setText("Genre: " + series.getGenre());
+        writeReview = findViewById(R.id.btn_new_review);
+        writeReview.setOnClickListener(this);
+        detailsImg = findViewById(R.id.img_details);
+        if(series.getExplicitImageUrl() == null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/series/");
+            storageRef.child(series.getThumbImage()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    series.setExplicitImageUrl(uri.toString());
+                    Picasso.get().load(uri).into(detailsImg);
+                }
+            });
+        }else{
+            Picasso.get().load(series.getExplicitImageUrl()).into(detailsImg);
+        }
+
+        buyPlaySeries = findViewById(R.id.btn_buy_series);
+        buyPlaySeries.setText("Buy " + series.getPrice() + "$");
+        Iterator i = user.getMyTvShows().iterator();
+        while (i.hasNext()) {
+            if (i.next().equals(key)) {
+                seriesWasPurchased = true;
+                buyPlaySeries.setText("PLAY");
+                break;
+            }
+        }
+        buyPlaySeries.setOnClickListener(this);
+
+        recyclerViewReviews = findViewById(R.id.series_reviews);
+        recyclerViewReviews.setHasFixedSize(true);
+        recyclerViewReviews.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerViewReviews.setItemAnimator(new DefaultItemAnimator());
+        ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviewsList);
+        recyclerViewReviews.setAdapter(reviewsAdapter);
+        seriesReviewsRef = FirebaseDatabase.getInstance().getReference("series/" + key +"/reviews");
+        seriesReviewsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Review review = dataSnapshot.getValue(Review.class);
+                    reviewsList.add(review);
+                }
+                recyclerViewReviews.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled(Review) >>" + databaseError.getMessage());
+            }
+        });
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+
+            case R.id.btn_buy_series:
+                buyOrPlaySeries();
+                break;
+
+            case R.id.btn_new_review:
+                addNewReview();
+                break;
+
+        }
+    }
+
+    private void addNewReview() {
+        Log.e(TAG, "writeReview.onClick() >>");
+        Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+        intent.putExtra("series", series);
+        intent.putExtra("key", key);
+        intent.putExtra("user", user);
+        startActivity(intent);
+        finish();
+        Log.e(TAG, "writeReview.onClick() <<");
+    }
+
+    private void buyOrPlaySeries() {
+        if (seriesWasPurchased) {
+            Log.e(TAG, "buyPlay.onClick() >> Playing purchased series");
+            playCurrentSeries(series);
+
+        } else {
+            //Purchase the song.
+            Log.e(TAG, "buyPlay.onClick() >> Purchase the song");
+            user.getMyTvShows().add(key);
+            user.upgdateTotalPurchase(series.getPrice());
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
+            userRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
+            seriesWasPurchased = true;
+            buyPlaySeries.setText("PLAY");
+        }
+        Log.e(TAG, "playSong.onClick() <<");
+    }
+
+
+    private void playCurrentSeries(Series series) {
+
+    }
+}
