@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         ImageView img = findViewById(R.id.img_splash);
-        Picasso.get().load(R.drawable.logo512).into(img);
+        Picasso.get().load(R.drawable.logo_512).into(img);
     }
 
 

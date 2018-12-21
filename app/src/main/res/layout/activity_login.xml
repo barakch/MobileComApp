@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg"
+    android:background="#181818"
     tools:context=".activities.LoginActivity">
 
     <LinearLayout
@@ -28,7 +28,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="Login with Email"
-            android:textColor="#000000"
+            android:textColor="#ffffff"
             android:textSize="15sp"
 
             android:textStyle="bold" />
@@ -39,6 +39,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:hint="Email address"
+            android:textColor="#ffffff"
+            android:textColorHint="#878787"
+            android:theme="@style/edTheme"
             android:inputType="textEmailAddress"
             android:paddingLeft="15dp"
             android:paddingRight="15dp" />
@@ -49,6 +52,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:hint="Password"
+            android:textColor="#ffffff"
+            android:theme="@style/edTheme"
+            android:textColorHint="#878787"
             android:inputType="textPassword"
             android:paddingLeft="15dp"
             android:paddingRight="15dp" />
@@ -70,6 +76,7 @@
             android:layout_marginTop="5dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="#ffffff"
             android:gravity="center_vertical"
             android:background="@drawable/transparent_selector"
             android:text="Forgot password" />
@@ -83,6 +90,7 @@
             android:fontFamily="casual"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
+            android:textColor="#ffffff"
             android:gravity="center_vertical"
             android:background="@drawable/transparent_selector"
             android:text="New user? Sign up" />
@@ -98,7 +106,7 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:text="Login with Facebook\\Google account"
-        android:textColor="#000000"
+        android:textColor="#ffffff"
         android:textSize="15sp"
         android:textStyle="bold" />
 
@@ -146,6 +154,7 @@
         android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
         android:textAlignment="center"
+        android:textColor="#ffffff"
         android:background="@drawable/transparent_selector"
         android:visibility="invisible"
         android:text="Sign in Anonymously" />

@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -170,6 +171,30 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
 
 
     private void playCurrentSeries(Series series) {
+        String videoID = "";
+        switch (series.getFileSong()){
+            case "1.mp3":
+                videoID = "U7elNhHwgBU";
+                break;
 
+            case "2.mp3":
+                videoID = "5hAXVqrljbs";
+                break;
+
+            case "3.mp3":
+                videoID = "vY0qzXi5oJg";
+                break;
+
+            case "4.mp3":
+                videoID = "ULwUzF1q5w4";
+                break;
+
+            case "5.mp3":
+                videoID = "NspqGM0DbbQ";
+
+                break;
+        }
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, "AIzaSyAcHc4SgcqGp1Nr1nk_MVbgFW1VjSCwnTI", videoID);
+        startActivity(intent);
     }
 }

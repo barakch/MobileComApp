@@ -17,6 +17,9 @@
         android:layout_marginRight="10dp"
         android:hint="Display name"
         android:inputType="text"
+        android:textColor="#ffffff"
+        android:theme="@style/edTheme"
+        android:textColorHint="#878787"
         android:paddingLeft="15dp"
         android:paddingRight="15dp" />
 
@@ -28,8 +31,12 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:hint="Email address"
+        android:theme="@style/edTheme"
+
         android:inputType="textEmailAddress"
         android:paddingLeft="15dp"
+        android:textColor="#ffffff"
+        android:textColorHint="#878787"
         android:paddingRight="15dp" />
 
     <EditText
@@ -40,6 +47,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:hint="Password"
+        android:theme="@style/edTheme"
+        android:textColor="#ffffff"
+        android:textColorHint="#878787"
         android:inputType="textPassword"
         android:paddingLeft="15dp"
         android:paddingRight="15dp" />

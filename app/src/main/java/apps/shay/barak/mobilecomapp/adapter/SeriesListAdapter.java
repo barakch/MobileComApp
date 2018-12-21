@@ -15,13 +15,11 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
 import apps.shay.barak.mobilecomapp.R;
@@ -74,6 +72,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         holder.reviewsCount.setVisibility(View.INVISIBLE);
 
         if(series.getExplicitImageUrl() == null) {
+            holder.thumbImage.setImageDrawable(null);
             StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/series/");
             storageRef.child(series.getThumbImage()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override

@@ -21,6 +21,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background"
             android:orientation="vertical"
             android:padding="4dp">
 
@@ -32,7 +33,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:scaleType="centerCrop"
-                android:src="@color/colorAccent"
+                android:src="@color/cardview_dark_background"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
                 card_view:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +45,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="[Series name]"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 card_view:layout_constraintStart_toEndOf="@+id/img_series"
@@ -65,6 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:maxLength="26"
                 android:text="[genere]"
                 android:textColor="@android:color/holo_blue_light"
                 android:textSize="14sp"

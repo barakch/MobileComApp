@@ -3,6 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     android:orientation="vertical"
     >
 
@@ -20,6 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:background="@color/cardview_dark_background"
             android:padding="4dp">
 
             <TextView
@@ -28,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="[Review Details]"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@android:color/holo_blue_light"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 card_view:layout_constraintStart_toStartOf="parent"
