@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,13 +32,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
 import java.util.Arrays;
+
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
 import apps.shay.barak.mobilecomapp.model.User;
@@ -53,12 +59,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText edEmail, edPassword;
     private LovelyProgressDialog progressDialog;
     private TextView btnAnnonymousLogin;
+    private boolean isNewUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance();
+        isNewUser = true;
 
         //Init views and UI listeners
         edEmail = findViewById(R.id.ed_signin_email);
@@ -100,10 +108,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void updateUI(){
-        if(mRemoteConfig.getBoolean("allow_annonymous")){
+    private void updateUI() {
+        if (mRemoteConfig.getBoolean("allow_annonymous")) {
             btnAnnonymousLogin.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             btnAnnonymousLogin.setVisibility(View.INVISIBLE);
         }
     }
@@ -186,8 +194,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                             hideProgressDialog();
-                            openMainActivity();
+                            createDataBaseReference();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -264,7 +273,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 errMsg = error.getCause().getMessage();
             new LovelyStandardDialog(LoginActivity.this)
                     .setTitle("We have an error")
-                    .setMessage(""+errMsg).setPositiveButtonText("OK")
+                    .setMessage("" + errMsg).setPositiveButtonText("OK")
                     .show();
         }
     }
@@ -281,8 +290,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
+                            isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                             FirebaseUser user = mAuth.getCurrentUser();
-                            openMainActivity();
+                            createDataBaseReference();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -321,7 +331,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            openMainActivity();
+                            isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
+                            createDataBaseReference();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -339,28 +350,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     /**
      * Anonymous signup
      */
-     private void signupAnonymously(){
-         showProgressDialog();
-         mAuth.signInAnonymously()
-                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                     @Override
-                     public void onComplete(@NonNull Task<AuthResult> task) {
-                         if (task.isSuccessful()) {
-                             // Sign in success, update UI with the signed-in user's information
-                             Log.d(TAG, "signInAnonymously:success");
-                             openMainActivity();
-                         } else {
-                             // If sign in fails, display a message to the user.
-                             Log.w(TAG, "signInAnonymously:failure", task.getException());
-                             new LovelyStandardDialog(LoginActivity.this)
-                                     .setTitle("We have an error")
-                                     .setMessage(task.getException().getMessage()).setPositiveButtonText("OK")
-                                     .show();
-                         }
-                         hideProgressDialog();
-                     }
-                 });
-     }
+    private void signupAnonymously() {
+        showProgressDialog();
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInAnonymously:success");
+                            createDataBaseReference();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInAnonymously:failure", task.getException());
+                            new LovelyStandardDialog(LoginActivity.this)
+                                    .setTitle("We have an error")
+                                    .setMessage(task.getException().getMessage()).setPositiveButtonText("OK")
+                                    .show();
+                        }
+                        hideProgressDialog();
+                    }
+                });
+    }
 
     /**
      * Helpers
@@ -381,10 +392,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog = null;
     }
 
-    public void openMainActivity() {
+    public void createDataBaseReference() {
         createNewUser();
+        openMainActivity();
+    }
+
+    public void openMainActivity(){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         LoginActivity.this.finish();
     }
@@ -396,15 +411,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void createNewUser() {
-        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser fbUser = mAuth.getCurrentUser();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
 
-        if (user == null) {
+        if (fbUser == null) {
             Log.e(TAG, "createNewUser() << Error user is null");
             return;
         }
 
-        userRef.child(user.getUid()).setValue(new User(user.getEmail(),0,null));
-        Log.e(TAG, "createNewUser() <<");
+        if(isNewUser)
+            userRef.child(fbUser.getUid()).setValue(new User(fbUser.getEmail(),0,null));
     }
 }

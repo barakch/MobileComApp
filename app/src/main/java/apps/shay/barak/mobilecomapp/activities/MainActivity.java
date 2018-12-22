@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SeriesListAdapter seriesListAdapter;
     private EditText searchField;
     private User myUser;
-    public static int DETAILS_ACTIVITY_CODE = 55;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

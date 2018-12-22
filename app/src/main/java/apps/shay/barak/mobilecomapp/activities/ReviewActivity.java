@@ -47,7 +47,6 @@ public class ReviewActivity extends AppCompatActivity {
         userReview = findViewById(R.id.new_user_review);
         userRating = findViewById(R.id.new_user_rating);
 
-
         seriesRef = FirebaseDatabase.getInstance().getReference("series/" + key);
         seriesRef.child("/reviews/" +  FirebaseAuth.getInstance().getCurrentUser().getUid()).
                 addListenerForSingleValueEvent(new ValueEventListener() {

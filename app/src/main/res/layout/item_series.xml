@@ -35,7 +35,6 @@
                 android:scaleType="centerCrop"
                 android:src="@color/cardview_dark_background"
                 card_view:layout_constraintBottom_toBottomOf="parent"
-                card_view:layout_constraintStart_toStartOf="parent"
                 card_view:layout_constraintTop_toTopOf="parent" />
 
             <TextView

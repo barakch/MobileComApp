@@ -1,8 +1,6 @@
 package apps.shay.barak.mobilecomapp.activities;
 
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,11 +25,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.AnonymousHelper;
 import apps.shay.barak.mobilecomapp.adapter.ReviewsAdapter;
