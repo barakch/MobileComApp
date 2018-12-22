@@ -26,13 +26,13 @@
                 android:id="@+id/img_series"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop"
-                android:src="@color/cardview_dark_background"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"/>
+                android:src="@color/cardview_dark_background" />
 
             <TextView
                 android:id="@+id/tv_series_name"
@@ -40,67 +40,70 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_toRightOf="@+id/img_series"
                 android:text="[Series name]"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_toRightOf="@+id/img_series"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_no_seasons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/tv_series_name"
                 android:layout_marginStart="8dp"
-                android:text="[No of Seasons]"
-                android:textColor="@android:color/holo_blue_dark"
                 android:layout_toRightOf="@+id/img_series"
-                android:layout_below="@id/tv_series_name"/>
+                android:text="[No of Seasons]"
+                android:textColor="@android:color/holo_blue_dark" />
 
             <TextView
                 android:id="@+id/tv_genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_no_seasons"
                 android:layout_marginStart="8dp"
+                android:layout_toRightOf="@+id/img_series"
                 android:maxLength="26"
                 android:text="[genere]"
                 android:textColor="@android:color/holo_blue_light"
-                android:textSize="14sp"
-                android:layout_toRightOf="@+id/img_series"
-                android:layout_below="@+id/tv_no_seasons"/>
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_series_review_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/rb_series_rating"
+                android:layout_alignLeft="@+id/tv_series_price"
+                android:text="(3 reviews)"
+                android:textColor="#00a40e" />
+
+            <TextView
+                android:id="@+id/tv_series_price"
+                android:layout_width="66dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:text="[$X.X]"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
 
             <RatingBar
                 android:id="@+id/rb_series_rating"
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="17dp"
+                android:layout_below="@+id/tv_genre"
                 android:layout_marginStart="8dp"
+                android:layout_toRightOf="@+id/img_series"
                 android:numStars="5"
                 android:rating="0"
-                android:stepSize="0.1"
-                android:layout_toRightOf="@+id/img_series"
-                android:layout_below="@+id/tv_genre" />
+                android:stepSize="0.1" />
 
-            <TextView
-                android:id="@+id/tv_series_price"
-                android:layout_width="66dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="8dp"
-                android:text="[$X.X]"
-                android:textAlignment="center"
-                android:textColor="@android:color/holo_green_dark"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"/>
-
-            <TextView
-                android:id="@+id/tv_series_review_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="16dp"
-                android:layout_toRightOf="@+id/img_series"
-                android:layout_alignParentBottom="true"/>
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>

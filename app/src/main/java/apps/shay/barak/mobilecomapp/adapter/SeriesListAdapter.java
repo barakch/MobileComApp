@@ -44,7 +44,6 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         this.parentActivity = activity;
     }
 
-
     @NonNull
     @Override
     public SeriesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -71,9 +70,12 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         holder.name.setText(series.getName());
         holder.noOfSeasons.setText("Seasons: "+series.getNoOfSeasons());
         holder.genre.setText("Genre: "+series.getGenre());
-        holder.price.setText("$" + series.getPrice());
         holder.rating.setRating(series.getRating());
-        holder.reviewsCount.setVisibility(View.INVISIBLE);
+
+        if(user.getMyTvShows().contains(seriesKey))
+            holder.price.setText("");
+        else
+            holder.price.setText("$" + series.getPrice());
 
         if(series.getExplicitImageUrl() == null) {
             holder.thumbImage.setImageDrawable(null);
@@ -91,6 +93,13 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
             });
         }else{
             Picasso.get().load(series.getExplicitImageUrl()).into(holder.thumbImage);
+        }
+
+        if (series.getReviewsCount() >0) {
+            holder.reviewsCount.setText("("+series.getReviewsCount()+" reviews)");
+            holder.rating.setRating((float)(series.getRating() / series.getReviewsCount()));
+        }else {
+            holder.reviewsCount.setText("");
         }
 
         holder.seriesCard.setOnClickListener(new View.OnClickListener() {

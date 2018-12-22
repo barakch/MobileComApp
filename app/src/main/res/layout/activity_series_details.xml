@@ -43,6 +43,7 @@
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
+            android:gravity="left"
             android:text="[Name]"
             android:textColor="@android:color/holo_blue_light"
             android:textSize="24sp"
@@ -55,9 +56,11 @@
             android:layout_above="@+id/tv_details_date"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="6dp"
+
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
+            android:gravity="left"
             android:text="[No. of seasons]"
             android:textColor="#1eff00"
             android:textSize="14sp"
@@ -68,11 +71,13 @@
             android:layout_width="107dp"
             android:layout_height="22dp"
             android:layout_above="@+id/tv_details_created"
+
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
+            android:gravity="left"
             android:text="[Creation Date]"
             android:textColor="#007bff"
             android:textSize="14sp"
@@ -83,11 +88,13 @@
             android:layout_width="107dp"
             android:layout_height="22dp"
             android:layout_above="@+id/tv_details_genre"
+
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
+            android:gravity="left"
             android:text="[Created by]"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
@@ -99,10 +106,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
+
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
+            android:gravity="left"
             android:text="[Genre]"
             android:textColor="@android:color/holo_orange_dark"
             android:textStyle="bold" />
@@ -135,7 +144,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-        app:elevation="4dp" />
+        app:elevation="4dp"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </RelativeLayout>

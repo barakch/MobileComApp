@@ -25,6 +25,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.yarolegovich.lovelydialog.LovelyStandardDialog;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -134,6 +136,13 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     private void addNewReview() {
         if (user.isAnonymous()) {
             AnonymousHelper.onMethodUnAllowed(this, FirebaseAuth.getInstance());
+            return;
+        }
+
+        if(!user.getMyTvShows().contains(key)){
+            new LovelyStandardDialog(this)
+                    .setTitle("You are not allowed to write a review")
+                    .setMessage("You must purchase the series in order to write a review").setPositiveButtonText("OK").show();
             return;
         }
 
