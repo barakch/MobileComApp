@@ -1,5 +1,6 @@
 package apps.shay.barak.mobilecomapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.activities.MainActivity;
 import apps.shay.barak.mobilecomapp.activities.SeriesDetailsActivity;
 import apps.shay.barak.mobilecomapp.model.Series;
 import apps.shay.barak.mobilecomapp.model.User;
@@ -33,11 +35,13 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
     private List<SeriesWithKey> seriesList;
     private List<SeriesWithKey> seriesFilteredList;
     private User user;
+    private Activity parentActivity;
 
-    public SeriesListAdapter(List<SeriesWithKey> seriesList, User user) {
+    public SeriesListAdapter(List<SeriesWithKey> seriesList, User user, Activity activity) {
         this.seriesList = seriesList;
         this.seriesFilteredList = seriesList;
         this.user = user;
+        this.parentActivity = activity;
     }
 
 
@@ -92,12 +96,12 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         holder.seriesCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, SeriesDetailsActivity.class);
+                Intent intent = new Intent(parentActivity, SeriesDetailsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("series", series);
                 intent.putExtra("key", seriesKey);
                 intent.putExtra("user",user);
-                context.startActivity(intent);
+                parentActivity.startActivity(intent);
             }
         });
     }

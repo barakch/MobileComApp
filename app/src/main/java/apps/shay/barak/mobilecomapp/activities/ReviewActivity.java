@@ -138,4 +138,15 @@ public class ReviewActivity extends AppCompatActivity {
 
         Log.e(TAG, "onSubmitClick() <<");
     }
+
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(),SeriesDetailsActivity.class);
+        intent.putExtra("series", series);
+        intent.putExtra("key", key);
+        intent.putExtra("user",user);
+        startActivity(intent);
+        finish();
+    }
 }

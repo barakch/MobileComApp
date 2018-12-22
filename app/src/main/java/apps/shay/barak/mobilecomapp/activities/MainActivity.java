@@ -1,5 +1,6 @@
 package apps.shay.barak.mobilecomapp.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SeriesListAdapter seriesListAdapter;
     private EditText searchField;
     private User myUser;
+    public static int DETAILS_ACTIVITY_CODE = 55;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getAllSeries() {
         seriesList.clear();
-        seriesListAdapter = new SeriesListAdapter(seriesList, myUser);
+        seriesListAdapter = new SeriesListAdapter(seriesList, myUser, this);
         recyclerView.setAdapter(seriesListAdapter);
 
         getAllSeriessUsingChildListenrs();
@@ -321,9 +323,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     void removeFirebaseUserAndOpenLoginActivity() {
         mAuth.signOut();
-//        hideProgressDialog();
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         finish();
     }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if(resultCode == Activity.RESULT_OK && requestCode == DETAILS_ACTIVITY_CODE){
+//                finish();
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//    }
 }

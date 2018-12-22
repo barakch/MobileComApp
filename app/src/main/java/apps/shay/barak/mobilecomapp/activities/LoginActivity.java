@@ -37,7 +37,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
-
 import java.util.Arrays;
 
 import apps.shay.barak.mobilecomapp.R;
@@ -386,6 +385,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void openMainActivity() {
         createNewUser();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         LoginActivity.this.finish();
     }

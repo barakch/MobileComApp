@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +15,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnonymousHelper;
 import apps.shay.barak.mobilecomapp.adapter.ReviewsAdapter;
 import apps.shay.barak.mobilecomapp.model.Review;
 import apps.shay.barak.mobilecomapp.model.Series;
@@ -50,11 +50,10 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     private FloatingActionButton writeReview;
     private Button buyPlaySeries;
     private ImageView detailsImg;
-    private MediaPlayer mediaPlayer;
     private RecyclerView recyclerViewReviews;
     private boolean seriesWasPurchased;
     private DatabaseReference seriesReviewsRef;
-    private List<Review> reviewsList =  new ArrayList<>();
+    private List<Review> reviewsList = new ArrayList<>();
 
 
     @Override
@@ -65,17 +64,13 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         series = getIntent().getParcelableExtra("series");
         user = getIntent().getParcelableExtra("user");
 
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-
         ((TextView) findViewById(R.id.tv_details_name)).setText(series.getName());
         ((TextView) findViewById(R.id.tv_details_no_seasons)).setText("Seasons: " + series.getNoOfSeasons());
         ((TextView) findViewById(R.id.tv_details_genre)).setText("Genre: " + series.getGenre());
         writeReview = findViewById(R.id.btn_new_review);
         writeReview.setOnClickListener(this);
         detailsImg = findViewById(R.id.img_details);
-        if(series.getExplicitImageUrl() == null) {
+        if (series.getExplicitImageUrl() == null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/series/");
             storageRef.child(series.getThumbImage()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
@@ -84,7 +79,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
                     Picasso.get().load(uri).into(detailsImg);
                 }
             });
-        }else{
+        } else {
             Picasso.get().load(series.getExplicitImageUrl()).into(detailsImg);
         }
 
@@ -106,7 +101,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         recyclerViewReviews.setItemAnimator(new DefaultItemAnimator());
         ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviewsList);
         recyclerViewReviews.setAdapter(reviewsAdapter);
-        seriesReviewsRef = FirebaseDatabase.getInstance().getReference("series/" + key +"/reviews");
+        seriesReviewsRef = FirebaseDatabase.getInstance().getReference("series/" + key + "/reviews");
         seriesReviewsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -124,7 +119,6 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -141,6 +135,11 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     }
 
     private void addNewReview() {
+        if (user.isAnonymous()) {
+            AnonymousHelper.onMethodUnAllowed(this, FirebaseAuth.getInstance());
+            return;
+        }
+
         Log.e(TAG, "writeReview.onClick() >>");
         Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
         intent.putExtra("series", series);
@@ -152,6 +151,11 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     }
 
     private void buyOrPlaySeries() {
+        if (user.isAnonymous()) {
+            AnonymousHelper.onMethodUnAllowed(this, FirebaseAuth.getInstance());
+            return;
+        }
+
         if (seriesWasPurchased) {
             Log.e(TAG, "buyPlay.onClick() >> Playing purchased series");
             playCurrentSeries(series);
@@ -172,7 +176,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
 
     private void playCurrentSeries(Series series) {
         String videoID = "";
-        switch (series.getFileSong()){
+        switch (series.getFileSong()) {
             case "1.mp3":
                 videoID = "U7elNhHwgBU";
                 break;
@@ -194,7 +198,23 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
 
                 break;
         }
-        Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, "AIzaSyAcHc4SgcqGp1Nr1nk_MVbgFW1VjSCwnTI", videoID);
-        startActivity(intent);
+
+        try {
+            Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, "AIzaSyAcHc4SgcqGp1Nr1nk_MVbgFW1VjSCwnTI", videoID);
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "You must install Youtube app in order to watch this series", Toast.LENGTH_SHORT);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getParent() != null)
+            super.onBackPressed();
+        else {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

@@ -107,6 +107,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
+        app:srcCompat="@android:drawable/ic_input_add"
         app:elevation="4dp" />
 
 </RelativeLayout>

@@ -35,6 +35,11 @@ public class User implements Parcelable {
     }
 
 
+    public boolean isAnonymous(){
+        if(email==null || email.isEmpty())
+            return true;
+        return false;
+    }
     @Override
     public int describeContents() {
         return 0;
