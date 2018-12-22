@@ -62,9 +62,15 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
                 <RadioButton
                     android:id="@+id/rb_order_by_price"
-                    android:layout_width="120dp"
+                    android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginBottom="8dp"
@@ -72,20 +78,21 @@
                     android:text="Order by price"
                     android:onClick="onRadioButtonCLick"
                     android:textColor="#ffffff"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent" />
+                    android:layout_weight="1" />
 
                 <RadioButton
                     android:id="@+id/rb_order_by_reviews"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:onClick="onRadioButtonCLick"
                     android:text="Order by reviews"
                     android:textColor="#ffffff"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_weight="1"/>
+                </LinearLayout>
 
             </android.support.constraint.ConstraintLayout>
 
