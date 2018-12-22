@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/top_bg"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="200dp"
         android:background="@color/cardview_dark_background">
 
         <ImageView
@@ -26,7 +26,7 @@
     <RelativeLayout
         android:id="@+id/top"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="200dp"
         android:background="@drawable/gradient"
         android:padding="4dp"
         android:paddingLeft="12dp"
@@ -52,7 +52,7 @@
             android:id="@+id/tv_details_no_seasons"
             android:layout_width="107dp"
             android:layout_height="22dp"
-            android:layout_above="@+id/tv_details_genre"
+            android:layout_above="@+id/tv_details_date"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="6dp"
@@ -60,6 +60,38 @@
             android:layout_marginBottom="6dp"
             android:layout_toLeftOf="@+id/btn_buy_series"
             android:text="[No. of seasons]"
+            android:textColor="#1eff00"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_details_date"
+            android:layout_width="107dp"
+            android:layout_height="22dp"
+            android:layout_above="@+id/tv_details_created"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_toLeftOf="@+id/btn_buy_series"
+            android:text="[Creation Date]"
+            android:textColor="#007bff"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_details_created"
+            android:layout_width="107dp"
+            android:layout_height="22dp"
+            android:layout_above="@+id/tv_details_genre"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_toLeftOf="@+id/btn_buy_series"
+            android:text="[Created by]"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
             android:textStyle="bold" />

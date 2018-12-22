@@ -119,19 +119,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         allSeriesRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-                Log.e(TAG, "onChildAdded(Series) >> " + snapshot.getKey());
                 SeriesWithKey seriesWithKey = new SeriesWithKey(snapshot.getKey(), snapshot.getValue(Series.class));
                 seriesList.add(seriesWithKey);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                Log.e(TAG, "onChildAdded(Series) <<" + seriesWithKey.getSeries().getName());
-
             }
 
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
-
-                Log.e(TAG, "onChildChanged(Series) >> " + snapshot.getKey());
-
                 Series series = snapshot.getValue(Series.class);
                 String key = snapshot.getKey();
 
@@ -143,26 +137,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     }
                 }
-
-                Log.e(TAG, "onChildChanged(Series) <<");
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
 
-                Log.e(TAG, "onChildMoved(Series) >> " + snapshot.getKey());
-
-
-                Log.e(TAG, "onChildMoved(Series) << Doing nothing");
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
-
-                Log.e(TAG, "onChildRemoved(Series) >> " + snapshot.getKey());
-
                 Series series = snapshot.getValue(Series.class);
                 String key = snapshot.getKey();
 
@@ -175,9 +158,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     }
                 }
-
-                Log.e(TAG, "onChildRemoved(Series) <<");
-
             }
 
             @Override
@@ -277,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-//        showProgressDialog();
         for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
             Log.d(TAG, "User provider is:" + user.getProviderId());
             if (user.getProviderId().equals("facebook.com")) {
@@ -333,13 +312,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         super.onNewIntent(intent);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if(resultCode == Activity.RESULT_OK && requestCode == DETAILS_ACTIVITY_CODE){
-//                finish();
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//    }
 }

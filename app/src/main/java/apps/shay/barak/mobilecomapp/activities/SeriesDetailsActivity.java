@@ -66,6 +66,8 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
 
         ((TextView) findViewById(R.id.tv_details_name)).setText(series.getName());
         ((TextView) findViewById(R.id.tv_details_no_seasons)).setText("Seasons: " + series.getNoOfSeasons());
+        ((TextView) findViewById(R.id.tv_details_created)).setText("Created by: " + series.getCreatedBy());
+        ((TextView) findViewById(R.id.tv_details_date)).setText("Publish date: " + series.getPublishDate());
         ((TextView) findViewById(R.id.tv_details_genre)).setText("Genre: " + series.getGenre());
         writeReview = findViewById(R.id.btn_new_review);
         writeReview.setOnClickListener(this);
@@ -147,7 +149,6 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         intent.putExtra("user", user);
         startActivity(intent);
         finish();
-        Log.e(TAG, "writeReview.onClick() <<");
     }
 
     private void buyOrPlaySeries() {
@@ -162,7 +163,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
 
         } else {
             //Purchase the song.
-            Log.e(TAG, "buyPlay.onClick() >> Purchase the song");
+            Log.e(TAG, "buyPlay.onClick() >> Purchase the series");
             user.getMyTvShows().add(key);
             user.upgdateTotalPurchase(series.getPrice());
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
@@ -170,7 +171,6 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
             seriesWasPurchased = true;
             buyPlaySeries.setText("PLAY");
         }
-        Log.e(TAG, "playSong.onClick() <<");
     }
 
 
