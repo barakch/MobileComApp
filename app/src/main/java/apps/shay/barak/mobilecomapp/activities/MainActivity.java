@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -100,6 +102,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 return false;
             }
+        });
+
+        searchField.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void afterTextChanged(Editable mEdit)
+            {
+                searchItem(mEdit.toString());
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
         });
     }
 
@@ -203,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void orderByPrice() {
-        Collections.sort(seriesList, new Comparator<SeriesWithKey>() {
+        Collections.sort(seriesListAdapter.getSeriesList(), new Comparator<SeriesWithKey>() {
             @Override
             public int compare(SeriesWithKey series1, SeriesWithKey series2) {
                 if (series1.getSeries().getPrice() > series2.getSeries().getPrice())
@@ -218,12 +233,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void orderByRating() {
-        Collections.sort(seriesList, new Comparator<SeriesWithKey>() {
+        Collections.sort(seriesListAdapter.getSeriesList(), new Comparator<SeriesWithKey>() {
             @Override
             public int compare(SeriesWithKey series1, SeriesWithKey series2) {
-                if (series1.getSeries().getRating() > series2.getSeries().getRating())
+                if (Series.getCombainedRating(series1.getSeries()) > Series.getCombainedRating(series2.getSeries()))
                     return -1;
-                if (series1.getSeries().getRating() == series2.getSeries().getRating())
+                if (Series.getCombainedRating(series1.getSeries()) == Series.getCombainedRating(series2.getSeries()))
                     return 0;
                 else
                     return 1;

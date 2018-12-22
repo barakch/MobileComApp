@@ -76,6 +76,8 @@
                 android:layout_alignTop="@+id/rb_series_rating"
                 android:layout_alignLeft="@+id/tv_series_price"
                 android:text="(3 reviews)"
+                android:gravity="left"
+                android:lines="1"
                 android:textColor="#00a40e" />
 
             <TextView

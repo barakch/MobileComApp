@@ -195,4 +195,17 @@ public class Series implements Parcelable {
         }
     };
 
+    public static float getCombainedRating(Series series){
+        if(series.getReviewsCount() == 0)
+            return series.getRating();
+
+        float rate = 0;
+        for (Review review : series.getReviews().values()){
+            rate +=review.getUserRating();
+        }
+        rate +=series.getRating();
+        rate /= (series.getReviewsCount()+1);
+        return rate;
+    }
+
 }

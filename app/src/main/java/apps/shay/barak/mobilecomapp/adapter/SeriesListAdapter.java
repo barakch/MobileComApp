@@ -24,7 +24,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import apps.shay.barak.mobilecomapp.R;
-import apps.shay.barak.mobilecomapp.activities.MainActivity;
 import apps.shay.barak.mobilecomapp.activities.SeriesDetailsActivity;
 import apps.shay.barak.mobilecomapp.model.Series;
 import apps.shay.barak.mobilecomapp.model.User;
@@ -42,6 +41,10 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         this.seriesFilteredList = seriesList;
         this.user = user;
         this.parentActivity = activity;
+    }
+
+    public List<SeriesWithKey> getSeriesList() {
+        return seriesFilteredList;
     }
 
     @NonNull
@@ -70,7 +73,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
         holder.name.setText(series.getName());
         holder.noOfSeasons.setText("Seasons: "+series.getNoOfSeasons());
         holder.genre.setText("Genre: "+series.getGenre());
-        holder.rating.setRating(series.getRating());
+        holder.rating.setRating(Series.getCombainedRating(series));
 
         if(user.getMyTvShows().contains(seriesKey))
             holder.price.setText("");
@@ -97,7 +100,6 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Se
 
         if (series.getReviewsCount() >0) {
             holder.reviewsCount.setText("("+series.getReviewsCount()+" reviews)");
-            holder.rating.setRating((float)(series.getRating() / series.getReviewsCount()));
         }else {
             holder.reviewsCount.setText("");
         }
