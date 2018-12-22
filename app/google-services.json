@@ -39,6 +39,14 @@
           }
         },
         {
+          "client_id": "163007701898-0lo1tlcmul7g46ge5ae5f3k1iacg7hno.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.shay.barak.mobilecomapp",
+            "certificate_hash": "886ba03b3aac93133e375d8bd336eb0965c4ad54"
+          }
+        },
+        {
           "client_id": "163007701898-ho13sa00ev8rh2kcq2u1qctk3fkvj16l.apps.googleusercontent.com",
           "client_type": 3
         }
