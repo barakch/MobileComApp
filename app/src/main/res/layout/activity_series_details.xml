@@ -83,7 +83,6 @@
             android:layout_width="107dp"
             android:layout_height="22dp"
             android:layout_above="@+id/tv_details_genre"
-            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
