@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -32,19 +31,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
 import apps.shay.barak.mobilecomapp.model.User;
 
@@ -60,12 +59,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private LovelyProgressDialog progressDialog;
     private TextView btnAnnonymousLogin;
     private boolean isNewUser;
+    private AnalyticsManager analyticsManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance();
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
         isNewUser = true;
 
         //Init views and UI listeners
@@ -196,7 +199,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             FirebaseUser user = mAuth.getCurrentUser();
                             isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                             hideProgressDialog();
-                            createDataBaseReference();
+                            createDataBaseReference("user/password");
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -292,7 +295,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Log.d(TAG, "signInWithCredential:success");
                             isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                             FirebaseUser user = mAuth.getCurrentUser();
-                            createDataBaseReference();
+                            createDataBaseReference("facebook");
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -332,7 +335,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
-                            createDataBaseReference();
+                            createDataBaseReference("google");
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -359,7 +362,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInAnonymously:success");
-                            createDataBaseReference();
+                            createDataBaseReference("anonymous");
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInAnonymously:failure", task.getException());
@@ -392,8 +395,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog = null;
     }
 
-    public void createDataBaseReference() {
-        createNewUser();
+    public void createDataBaseReference(String method) {
+        createNewUser(method);
         openMainActivity();
     }
 
@@ -410,7 +413,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    private void createNewUser() {
+    private void createNewUser(String method) {
         FirebaseUser fbUser = mAuth.getCurrentUser();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -419,7 +422,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if(isNewUser)
-            userRef.child(fbUser.getUid()).setValue(new User(fbUser.getEmail(),0,null));
+        if(isNewUser) {
+            userRef.child(fbUser.getUid()).setValue(new User(fbUser.getEmail(), 0, null));
+            analyticsManager.trackSignupEvent(method);
+        }else{
+            analyticsManager.trackLoginEvent(method);
+        }
+
+        analyticsManager.setUserID(mAuth.getCurrentUser().getUid(), isNewUser);
+        analyticsManager.setUserProperty("login_method", method);
+
+        if(!method.equalsIgnoreCase("anonymous")) {
+            analyticsManager.setUserProperty("name", fbUser.getDisplayName());
+            analyticsManager.setUserProperty("email", fbUser.getEmail());
+            analyticsManager.setUserProperty("photo_url", fbUser.getPhotoUrl().toString());
+            analyticsManager.setUserProperty("fb_uid", fbUser.getUid());
+            String date = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date(fbUser.getMetadata().getCreationTimestamp()));
+            analyticsManager.setUserProperty("creation_date", date);
+        }
     }
 }

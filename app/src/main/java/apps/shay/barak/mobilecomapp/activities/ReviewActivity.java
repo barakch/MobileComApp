@@ -16,6 +16,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.model.Review;
 import apps.shay.barak.mobilecomapp.model.Series;
 import apps.shay.barak.mobilecomapp.model.User;
@@ -31,14 +32,15 @@ public class ReviewActivity extends AppCompatActivity {
     private TextView userReview;
     private RatingBar userRating;
     private DatabaseReference seriesRef;
+    private AnalyticsManager analyticsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         Log.e(TAG, "onCreate() >>");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
+
 
         key = getIntent().getStringExtra("key");
         series = getIntent().getParcelableExtra("series");
@@ -96,6 +98,7 @@ public class ReviewActivity extends AppCompatActivity {
                     series.incrementRating((int)userRating.getRating() - prevRating);
                 }
 
+                analyticsManager.trackSeriesRating(series,(int)userRating.getRating());
                 mutableData.setValue(series);
                 Log.e(TAG, "doTransaction() << series was set");
                 return Transaction.success(mutableData);

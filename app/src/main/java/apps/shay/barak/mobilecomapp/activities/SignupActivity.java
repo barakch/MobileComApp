@@ -1,6 +1,7 @@
 package apps.shay.barak.mobilecomapp.activities;
 
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.Utils.Validator;
 import apps.shay.barak.mobilecomapp.model.User;
 
@@ -32,6 +33,9 @@ import com.google.firebase.storage.UploadTask;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import com.yarolegovich.lovelydialog.LovelyStandardDialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -41,6 +45,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private EditText edEmail, edPassword, edName;
     private Uri imagePath;
     private LovelyProgressDialog progressDialog;
+    private AnalyticsManager analyticsManager;
+
 
 
     @Override
@@ -48,6 +54,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         mAuth = FirebaseAuth.getInstance();
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
 
         edEmail = findViewById(R.id.ed_email);
         edPassword = findViewById(R.id.ed_password);
@@ -260,5 +267,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         userRef.child(user.getUid()).setValue(new User(user.getEmail(),0,null));
         Log.e(TAG, "createNewUser() <<");
+
+        analyticsManager.trackSignupEvent("user/password");
+        analyticsManager.setUserID(mAuth.getCurrentUser().getUid(), true);
+        analyticsManager.setUserProperty("name", mAuth.getCurrentUser().getDisplayName());
+        analyticsManager.setUserProperty("email", mAuth.getCurrentUser().getEmail());
+        analyticsManager.setUserProperty("photo_url", mAuth.getCurrentUser().getPhotoUrl().toString());
+        analyticsManager.setUserProperty("fb_uid", mAuth.getCurrentUser().getUid());
+        String date = new SimpleDateFormat("yyyy.MM.dd").format(new Date(mAuth.getCurrentUser().getMetadata().getCreationTimestamp()));
+        analyticsManager.setUserProperty("creation_date", date);
     }
 }

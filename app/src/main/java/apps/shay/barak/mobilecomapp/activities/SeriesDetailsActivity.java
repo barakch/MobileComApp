@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.Utils.AnonymousHelper;
 import apps.shay.barak.mobilecomapp.adapter.ReviewsAdapter;
 import apps.shay.barak.mobilecomapp.model.Review;
@@ -51,12 +52,14 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     private boolean seriesWasPurchased;
     private DatabaseReference seriesReviewsRef;
     private List<Review> reviewsList = new ArrayList<>();
+    private AnalyticsManager analyticsManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_series_details);
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
         key = getIntent().getStringExtra("key");
         series = getIntent().getParcelableExtra("series");
         user = getIntent().getParcelableExtra("user");
@@ -116,6 +119,8 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
                 Log.e(TAG, "onCancelled(Review) >>" + databaseError.getMessage());
             }
         });
+
+        analyticsManager.trackSeriesEvent("series_view", series);
     }
 
     @Override
@@ -164,6 +169,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         if (seriesWasPurchased) {
             Log.e(TAG, "buyPlay.onClick() >> Playing purchased series");
             playCurrentSeries(series);
+            analyticsManager.trackSeriesEvent("series_play", series);
 
         } else {
             //Purchase the song.
@@ -174,6 +180,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
             userRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
             seriesWasPurchased = true;
             buyPlaySeries.setText("PLAY");
+            analyticsManager.trackPurchase(series);
         }
     }
 

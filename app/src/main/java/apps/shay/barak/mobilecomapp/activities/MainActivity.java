@@ -1,6 +1,5 @@
 package apps.shay.barak.mobilecomapp.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -16,12 +15,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -38,13 +35,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.adapter.SeriesListAdapter;
 import apps.shay.barak.mobilecomapp.adapter.SeriesWithKey;
 import apps.shay.barak.mobilecomapp.model.Series;
@@ -61,12 +57,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SeriesListAdapter seriesListAdapter;
     private EditText searchField;
     private User myUser;
+    private AnalyticsManager analyticsManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
+        analyticsManager.setUserProperty("enable_push_campaigns","true");
+
+
         recyclerView = findViewById(R.id.series_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -198,7 +200,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     void searchItem(String hint) {
+        if(hint == null || seriesListAdapter == null)
+            return;
+
         seriesListAdapter.getFilter().filter(hint);
+        analyticsManager.trackSearchEvent(hint);
     }
 
 
@@ -230,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         seriesListAdapter.notifyDataSetChanged();
+        analyticsManager.trackSortEvent("price");
     }
 
     private void orderByRating() {
@@ -245,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         seriesListAdapter.notifyDataSetChanged();
+        analyticsManager.trackSortEvent("rating");
     }
 
     @Override

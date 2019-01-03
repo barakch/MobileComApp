@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 import apps.shay.barak.mobilecomapp.R;
+import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -23,6 +24,7 @@ public class SplashActivity extends AppCompatActivity {
 
         ImageView img = findViewById(R.id.img_splash);
         Picasso.get().load(R.drawable.logo_512).into(img);
+        AnalyticsManager.getInstance(getApplicationContext());
     }
 
 
