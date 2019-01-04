@@ -53,6 +53,7 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
     private DatabaseReference seriesReviewsRef;
     private List<Review> reviewsList = new ArrayList<>();
     private AnalyticsManager analyticsManager;
+    private boolean showOnce=true;
 
 
     @Override
@@ -63,6 +64,11 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
         key = getIntent().getStringExtra("key");
         series = getIntent().getParcelableExtra("series");
         user = getIntent().getParcelableExtra("user");
+        int discount = getIntent().getIntExtra("discount", -1);
+        int oldPrice= getIntent().getIntExtra("old_price", -1);
+        if(discount > 0 && showOnce){
+            showDiscountMessage(discount, oldPrice);
+        }
 
         ((TextView) findViewById(R.id.tv_details_name)).setText(series.getName());
         ((TextView) findViewById(R.id.tv_details_no_seasons)).setText("Seasons: " + series.getNoOfSeasons());
@@ -227,5 +233,13 @@ public class SeriesDetailsActivity extends AppCompatActivity implements View.OnC
             startActivity(intent);
             finish();
         }
+    }
+
+    private void showDiscountMessage(int discount, int oldPrice){
+        new LovelyStandardDialog(this)
+                .setTitle("Get " +series.getName()+ " "+discount+"% off now!")
+                .setMessage("Pay only " + series.getPrice() +"$ instead of " + oldPrice+"$").setPositiveButtonText("OK")
+                .show();
+        showOnce = false;
     }
 }

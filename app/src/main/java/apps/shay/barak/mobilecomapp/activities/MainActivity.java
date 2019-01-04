@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,16 +36,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.yarolegovich.lovelydialog.LovelyProgressDialog;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import apps.shay.barak.mobilecomapp.R;
 import apps.shay.barak.mobilecomapp.Utils.AnalyticsManager;
 import apps.shay.barak.mobilecomapp.adapter.SeriesListAdapter;
 import apps.shay.barak.mobilecomapp.adapter.SeriesWithKey;
 import apps.shay.barak.mobilecomapp.model.Series;
 import apps.shay.barak.mobilecomapp.model.User;
+import apps.shay.barak.mobilecomapp.notifications.PushNotificationService;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText searchField;
     private User myUser;
     private AnalyticsManager analyticsManager;
+    private LovelyProgressDialog progressDialog;
 
 
     @Override
@@ -66,7 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
-        analyticsManager.setUserProperty("enable_push_campaigns","true");
+        analyticsManager.setUserProperty("enable_push_campaigns", "true");
+
+        if (getIntent() != null && getIntent().getIntExtra(PushNotificationService.PUSH_ACTION, 0) == PushNotificationService.ACTION_DISCOUNT) {
+            showProgressDialog("Loading your discount...");
+        }
 
 
         recyclerView = findViewById(R.id.series_list);
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onDataChange(DataSnapshot snapshot) {
                     myUser = snapshot.getValue(User.class);
                     getAllSeries();
+                    handleIntents();
                 }
 
                 @Override
@@ -106,18 +117,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        searchField.addTextChangedListener(new TextWatcher()
-        {
+        searchField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable mEdit)
-            {
+            public void afterTextChanged(Editable mEdit) {
                 searchItem(mEdit.toString());
             }
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-            public void onTextChanged(CharSequence s, int start, int before, int count){}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
         });
+
+    }
+
+    private void handleIntents() {
+        if (getIntent() != null && getIntent().getIntExtra(PushNotificationService.PUSH_ACTION, 0) != 0) {
+            switch (getIntent().getIntExtra(PushNotificationService.PUSH_ACTION, 0)) {
+                case PushNotificationService.ACTION_DISCOUNT:
+                    String seriesKey = getIntent().getStringExtra("series_key");
+                    float discount = getIntent().getFloatExtra("percentage", 0);
+                    Log.d(TAG, "Notification - Action discount - series key " + seriesKey + " discount percentage:" + discount + "%");
+                    handleDiscount(seriesKey, discount);
+                    break;
+
+                 case PushNotificationService.ACTION_SHARE:
+                    handleShare();
+                     break;
+            }
+
+        } else {
+            Log.d(TAG, "semek");
+//            handleDiscount("-LU6OKvOTK3eMX3Qo4sc", 1.0f);
+
+        }
     }
 
     private void getAllSeries() {
@@ -200,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     void searchItem(String hint) {
-        if(hint == null || seriesListAdapter == null)
+        if (hint == null || seriesListAdapter == null)
             return;
 
         seriesListAdapter.getFilter().filter(hint);
@@ -330,8 +364,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onNewIntent(Intent intent)
-    {
+    protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    private void handleDiscount(final String seriesKey, final float discount) {
+        DatabaseReference seriesRef = FirebaseDatabase.getInstance().getReference("series/" + seriesKey);
+
+        seriesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Series series = dataSnapshot.getValue(Series.class);
+                if (series == null) return;
+                int oldPrice = series.getPrice();
+                Log.d(TAG, "Open series with discount = " + series.getName());
+                series.setPrice((int) (series.getPrice() * discount));
+                Intent intent = new Intent(getApplicationContext(), SeriesDetailsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("series", series);
+                intent.putExtra("key", seriesKey);
+                intent.putExtra("user", myUser);
+                intent.putExtra("old_price", oldPrice);
+                intent.putExtra("discount", (int)(discount*100));
+                MainActivity.this.startActivity(intent);
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                hideProgressDialog();
+            }
+        });
+
+    }
+
+    private void handleShare(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                "Hey check out notflix at: https://play.google.com/store/apps/details?id=apps.shay.barak.mobilecomapp");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
+
+    /**
+     * Helpers
+     */
+    public void showProgressDialog(String msg) {
+        if (progressDialog != null) {
+            return;
+        }
+
+        progressDialog = new LovelyProgressDialog(this)
+                .setTitle(msg);
+        progressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (progressDialog != null)
+            progressDialog.dismiss();
+        progressDialog = null;
     }
 }

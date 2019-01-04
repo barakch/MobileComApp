@@ -19,7 +19,8 @@ import apps.shay.barak.mobilecomapp.activities.MainActivity;
 public class PushNotificationService extends FirebaseMessagingService {
 
     private static final String TAG ="PushNotificationService";
-
+    public static final String PUSH_ACTION = "push_action";
+    public static final int ACTION_DISCOUNT=2, ACTION_SHARE=3, ACTION_OPEN=4;
 
     public PushNotificationService() {
     }
@@ -84,10 +85,8 @@ public class PushNotificationService extends FirebaseMessagingService {
         }
 
         Intent intent = new Intent(this, MainActivity.class);
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -106,16 +105,34 @@ public class PushNotificationService extends FirebaseMessagingService {
         value = data.get("action");
         if (value != null) {
             if (value.contains("share")) {
-                PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0 , intent,
-                        PendingIntent.FLAG_ONE_SHOT);
-                notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_share_black_24dp,"Share",pendingShareIntent));
+                intent.putExtra(PUSH_ACTION, ACTION_SHARE);
+                Log.d(TAG, "Got share notification");
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Hey check out notflix at: https://play.google.com/store/apps/details?id=apps.shay.barak.mobilecomapp");
+                sendIntent.setType("text/plain");
+                PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0 , sendIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_shopping_cart_black_24dp,"Let's invite them!",pendingShareIntent));
+                notificationBuilder.setContentIntent(pendingShareIntent);
             }
-            if (value.contains("go to sale")) {
+            if(value.contains("open")){
                 PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0 , intent,
                         PendingIntent.FLAG_ONE_SHOT);
+                notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_shopping_cart_black_24dp,"Go to Notflix",pendingShareIntent));
+            }
+            if(value.contains("discount")){
+                intent.putExtra(PUSH_ACTION, ACTION_DISCOUNT);
+                intent.putExtra("series_key", data.get("series_key"));
+                intent.putExtra("percentage", Float.parseFloat(data.get("percentage")));
+                Log.d(TAG, "Got test notification");
+                Log.d(TAG, data.get("series_key"));
+                Log.d(TAG,  ""+Float.parseFloat(data.get("percentage")));
+                PendingIntent pendingShareIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_shopping_cart_black_24dp,"Go to sale!",pendingShareIntent));
-            }
+                notificationBuilder.setContentIntent(pendingShareIntent);
 
+            }
         }
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
